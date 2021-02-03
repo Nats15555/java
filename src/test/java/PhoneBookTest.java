@@ -57,7 +57,7 @@ class PhoneBookTest {
         testNoName.add("+756565");
         testNoName.add("+856545,789988");
         testNoName.add("-");
-        assertEquals(testNoName,pBook.addNumder("m","+555555"));//добавление по имени которого нет
+        assertEquals(testNoName,pBook.addNumder("m","#55555"));//добавление по имени которого нет
         System.out.println("_______________________");
         ArrayList<String> testTrueName=new ArrayList<String>();
         testTrueName.add("+756565,+7565655");
@@ -76,6 +76,8 @@ class PhoneBookTest {
         testAddMoreName.add("+856545,789988");
         testAddMoreName.add("+7565655");
         assertEquals(testAddMoreName,pBook.addNumder("Blad","+856545"));//добавление номера, который уже был у человека у которого больше 1 номера*/
+        assertEquals(testAddMoreName,pBook.addNumder("Blad",""));//добавление человеку который еть по неправильному формату номера
+        assertEquals(testAddMoreName,pBook.addNumder("Blad","    "));// из пробелов
     }
 
     @Test

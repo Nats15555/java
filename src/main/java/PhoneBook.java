@@ -11,6 +11,7 @@ public class PhoneBook {
     }
 
     public ArrayList<String> addUser(String name) {
+        name.trim();
         System.out.println(this.userName);
         System.out.println(this.userNumber);
 
@@ -27,6 +28,7 @@ public class PhoneBook {
     }
 
     public ArrayList<String> delUser(String name) {
+        name.trim();
         int index = this.userName.indexOf(name);
         System.out.println(this.userName);
         System.out.println(this.userNumber);
@@ -44,33 +46,39 @@ public class PhoneBook {
     }
 
     public ArrayList<String> addNumder(String name, String phoneNum) {
-        int index = this.userName.indexOf(name);
-        System.out.println(this.userName);
-        System.out.println(this.userNumber);
-        if (index > -1 && this.userNumber.get(index).equals("-")) {//добавлене у того у кого нет телефонов вообще
-            this.userNumber.set(index, phoneNum);
-        } else if (index > -1 && !this.userNumber.get(index).equals("-")) {
-            String[] buff = this.userNumber.get(index).split(",");
-            int i = buff.length;
-            boolean ex = false;
-            if (i > 1) {
-                while (i - 1 > -1) {
-                    if (buff[i - 1].equals(phoneNum)) {
-                        ex = true;
+        name.trim();
+        phoneNum.trim();
+        if(phoneNum.matches("(\\d+|(\\+|-|\\*|#|-))*" ) && !phoneNum.equals("")){
+            int index = this.userName.indexOf(name);
+            System.out.println(this.userName);
+            System.out.println(this.userNumber);
+            if (index > -1 && this.userNumber.get(index).equals("-")) {//добавлене у того у кого нет телефонов вообще
+                this.userNumber.set(index, phoneNum);
+            } else if (index > -1 && !this.userNumber.get(index).equals("-")) {
+                String[] buff = this.userNumber.get(index).split(",");
+                int i = buff.length;
+                boolean ex = false;
+                if (i > 1) {
+                    while (i - 1 > -1) {
+                        if (buff[i - 1].equals(phoneNum)) {
+                            ex = true;
+                        }
+                        i--;
                     }
-                    i--;
-                }
-                if (!ex) {
+                    if (!ex) {
+                        this.userNumber.set(index, this.userNumber.get(index) + "," + phoneNum);
+                    }
+                } else {
                     this.userNumber.set(index, this.userNumber.get(index) + "," + phoneNum);
                 }
             } else {
-                this.userNumber.set(index, this.userNumber.get(index) + "," + phoneNum);
+                System.out.println("Пользователь которому вы хотите добавить телефон еще не добавлен");
             }
-        } else {
-            System.out.println("Пользователь которому вы хотите добавить телефон еще не добавлен");
+            System.out.println(this.userName);
+            System.out.println(this.userNumber);
+        }else {
+            System.out.println("Не правильный формат номера");
         }
-        System.out.println(this.userName);
-        System.out.println(this.userNumber);
         return this.userNumber;
         /* добавляет номер по имени, если имен больше одного,
          ** то спрашивает кому именно добавить.
@@ -80,58 +88,74 @@ public class PhoneBook {
     }
 
     public ArrayList<String> delNumder(String name, String number) {
-        int index = this.userName.indexOf(name);
-        if (index > -1 && this.userNumber.get(index).equals("-")) {
-            System.out.println("У данного пользователя нет номеров телефона которые можно удалить");
-        } else if (index > -1 && !this.userNumber.get(index).equals("-")) {
-            String[] m = this.userNumber.get(index).split(",");
-            int buff = m.length - 1;
-            StringBuilder sort = new StringBuilder();
-            while (buff >= 0) {
-                if (!m[buff].equals(number)) {
-                    if (sort.toString().equals("")) {
-                        sort.append(m[buff]);
-                    } else {
-                        sort.append(",").append(m[buff]);
+        name.trim();
+        number.trim();
+        if(number.matches("(\\d+|(\\+|-|\\*|#|-))*" ) && !number.equals("")){
+            int index = this.userName.indexOf(name);
+            if (index > -1 && this.userNumber.get(index).equals("-")) {
+                System.out.println("У данного пользователя нет номеров телефона которые можно удалить");
+            } else if (index > -1 && !this.userNumber.get(index).equals("-")) {
+                String[] m = this.userNumber.get(index).split(",");
+                int buff = m.length - 1;
+                StringBuilder sort = new StringBuilder();
+                while (buff >= 0) {
+                    if (!m[buff].equals(number)) {
+                        if (sort.toString().equals("")) {
+                            sort.append(m[buff]);
+                        } else {
+                            sort.append(",").append(m[buff]);
+                        }
                     }
+                    buff--;
                 }
-                buff--;
+                if(this.userNumber.get(index).equals(number) || this.userNumber.get(index).equals("-")){
+                    this.userNumber.set(index,"-");
+                }else{
+                    this.userNumber.set(index, sort.toString());
+                }
+            } else {
+                System.out.println("Данного пользователя нет в cиcтеме, удалене номер невозможно");
             }
-            if(this.userNumber.get(index).equals(number) || this.userNumber.get(index).equals("-")){
-                this.userNumber.set(index,"-");
-            }else{
-                this.userNumber.set(index, sort.toString());
-            }
-        } else {
-            System.out.println("Данного пользователя нет в cиcтеме, удалене номер невозможно");
         }
+        else {
+            System.out.println("Не правильный формат номера");
+        }
+
         /* удаляет номер по имени.
          */
         return this.userNumber;
     }
 
     public String foundName(String phoneNum) {
-        int i = this.userNumber.size() - 1;
-        while (i > -1) {
-            String[] buff = this.userNumber.get(i).split(",");
-            if (buff.length > 1 || buff[0].equals(phoneNum)) {
-                int len = buff.length - 1;
-                while (len > -1) {
-                    if (buff[len].equals(phoneNum)) {
-                        return this.userName.get(i);
+        phoneNum.trim();
+        if(phoneNum.matches("(\\d+|(\\+|-|\\*|#|-))*" ) && !phoneNum.equals("")){
+            int i = this.userNumber.size() - 1;
+            while (i > -1) {
+                String[] buff = this.userNumber.get(i).split(",");
+                if (buff.length > 1 || buff[0].equals(phoneNum)) {
+                    int len = buff.length - 1;
+                    while (len > -1) {
+                        if (buff[len].equals(phoneNum)) {
+                            return this.userName.get(i);
+                        }
+                        len--;
                     }
-                    len--;
                 }
+                i--;
             }
-            i--;
+            return "Такого номера нет ни у кого";
         }
-        return "Такого номера нет ни у кого";
+        else {
+            return "Не правильный формат номера";
+        }
+
         /* ищет имя пользователя по номеру телефона, возвращает Имя
          */
     }
 
 
     public String foundNumbers(String name) {
+        name.trim();
         int index = this.userName.indexOf(name);
         if (index > -1) {
             System.out.println(this.userNumber.get(index));
