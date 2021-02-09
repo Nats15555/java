@@ -53,9 +53,9 @@ public class PhoneBook {
         if (name != null && phoneNum != null) {
             name.trim();
             phoneNum.trim();
-        }else return false; //Не правильный формат номера
+        } else return false; //Не правильный формат номера
         if (phoneNum.matches(this.regexNum) && !phoneNum.equals("")) {
-            int indexUser = Integer.parseInt(foundNumbers(name).get(foundNumbers(name).size() - 1));
+            int indexUser = indexUser(name);
             ArrayList<String> buffNum = this.users.get(indexUser).getUserNumber();
             if (!buffNum.contains(phoneNum)) {
                 buffNum.add(phoneNum);
@@ -70,16 +70,15 @@ public class PhoneBook {
          возвращает состояние выполнения функции, True если выполнилось, False если нет*/
     }
 
-
     public boolean delNumder(String name, String number) {
-        if(name!=null && number!=null){
+        if (name != null && number != null) {
             name.trim();
             number.trim();
-        }else return false;
+        } else return false;
         if (number.matches(this.regexNum) && !number.equals("")) {
-            int indexUser=Integer.parseInt(foundNumbers(name).get(foundNumbers(name).size()-1));
+            int indexUser = indexUser(name);
             ArrayList<String> buffNum = this.users.get(indexUser).getUserNumber();
-            if(buffNum.contains(number)){
+            if (buffNum.contains(number)) {
                 buffNum.remove(number);
                 this.users.get(indexUser).setUserNumber(buffNum);
                 return true;
@@ -113,30 +112,31 @@ public class PhoneBook {
         }
 
         // ищет имя пользователя по номеру телефона, возвращает Имя
-
     }
 
-
-    public ArrayList<String> foundNumbers(String name) {
-        ArrayList<String> reT=new ArrayList<String>();
+    public String foundNumbers(String name) {
         if (name != null) name.trim();
         else {
-            reT.add("Пользователь не может быть null");
-            return reT;
+            return "Пользователь не может быть Null";//Пользователь не может быть null
         }
+        int index = indexUser(name);
+        if (index > -1) {
+            return this.users.get(index).getUserNumber().toString().replaceFirst("\\[","")
+                    .replaceFirst("]","");
+        }
+        return "Пользователя нет в cиcтеме";
+        //возвращает все номера пользователя
+    }
+
+    private int indexUser(String name) {
         int indexUser = this.users.size() - 1;
         while (indexUser > -1) {
             User user = this.users.get(indexUser);
             if (user.getUserName().equals(name)) {
-                reT.add(user.getUserNumber().toString());
-                reT.add(String.valueOf(indexUser));
-                return reT;
+                return indexUser;
             }
             indexUser--;
         }
-        reT.add("Данного пользователя нет в cиcтеме");
-        return reT;
-        //возвращает все номера пользователя, поcледнее значене это индекc в cиcтеме
+        return -1;//Данного пользователя нет в cиcтеме
     }
-
 }

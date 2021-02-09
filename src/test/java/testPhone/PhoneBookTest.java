@@ -106,19 +106,6 @@ class PhoneBookTest {
         ArrayList<String> numberUserOne = new ArrayList<String>();
         ArrayList<String> numberUserTwo = new ArrayList<String>();
         ArrayList<String> numberUserThree = new ArrayList<>();
-        ArrayList<String> valueN=new ArrayList<String>();
-        valueN.add("Пользователь не может быть null");
-        ArrayList<String> value=new ArrayList<String>();
-        value.add("Данного пользователя нет в cиcтеме");
-        ArrayList<String> valueNik=new ArrayList<String>();
-        valueNik.add("[+8585858]");
-        valueNik.add("0");
-        ArrayList<String> valueBlad=new ArrayList<String>();
-        valueBlad.add("[+8582222, 8585858555]");
-        valueBlad.add("1");
-        ArrayList<String> valueKosti=new ArrayList<String>();
-        valueKosti.add("[]");
-        valueKosti.add("2");
         numberUserOne.add("+8585858");
         numberUserTwo.add("+8582222");
         numberUserTwo.add("8585858555");
@@ -126,10 +113,10 @@ class PhoneBookTest {
         users.add(new User("Blad", numberUserTwo));
         users.add(new User("Kostia", numberUserThree));
         PhoneBook pBook = new PhoneBook(users);
-        assertEquals(valueN, pBook.foundNumbers(null));//null введеный
-        assertEquals(value, pBook.foundNumbers("Anna"));//нет данного пользователя в cиcтеме
-        assertEquals(valueNik, pBook.foundNumbers("Nikola"));//поиcк когда номеров 1
-        assertEquals(valueBlad, pBook.foundNumbers("Blad"));//поиcк когда номеров больше 1
-        assertEquals(valueKosti, pBook.foundNumbers("Kostia"));//поиcк когда нет номеров
+        assertEquals("Пользователь не может быть Null", pBook.foundNumbers(null));//null введеный
+        assertEquals("Пользователя нет в cиcтеме", pBook.foundNumbers("Anna"));//нет данного пользователя в cиcтеме
+        assertEquals("+8585858", pBook.foundNumbers("Nikola"));//поиcк когда номеров 1
+        assertEquals("+8582222, 8585858555", pBook.foundNumbers("Blad"));//поиcк когда номеров больше 1
+        assertEquals("", pBook.foundNumbers("Kostia"));//поиcк когда нет номеров
     }
 }
