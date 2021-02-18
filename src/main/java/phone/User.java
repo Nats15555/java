@@ -1,15 +1,16 @@
 package phone;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class User {// передалать это книга а не юзер у юза поля зтринговые
     private String userName = "";         // буфер имен пользователей
     private ArrayList<String> userNumber = new ArrayList<String>();  // бефер номеров пользователей
 
-    public User(String userName, ArrayList<String> userNumber) {
+    public User(String userName, List<String> userNumber) {
         if (userName != null && userNumber != null) {
-            this.userNumber = userNumber;
+            this.userNumber = (ArrayList<String>) userNumber;
             this.userName = userName;
         }
     }

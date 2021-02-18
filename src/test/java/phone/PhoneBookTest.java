@@ -119,7 +119,9 @@ class PhoneBookTest {
         assertThrows(IllegalStateException.class, () -> {
             pBook.addNumder("Kostia", "+8585858");
         });//добавленеие похожего
-        assertEquals(false, pBook.addNumder("Blad", "5/5/"));//при неправильном вооде номера
+        assertThrows(IllegalAccessException.class, () -> {
+            pBook.addNumder("Blad", "5/5/");
+        });//при неправильном вооде номера
     }
 
     @Test
@@ -177,8 +179,8 @@ class PhoneBookTest {
         users.add(new User("Kostia", numberUserThree));
         PhoneBook pBook = new PhoneBook(users);
         assertEquals("Пользователь не может быть Null", pBook.foundNumbers(null));//null введеный
-        assertEquals("Пользователя нет в cиcтеме", pBook.foundNumbers("Anna"));//нет данного пользователя в cиcтеме
         assertEquals("+8585858", pBook.foundNumbers("Nikola"));//поиcк когда номеров 1
+        assertEquals("Пользователя нет в cиcтеме", pBook.foundNumbers("Anna"));//нет данного пользователя в cиcтеме
         assertEquals("+8582222,8585858555,8585855", pBook.foundNumbers("Blad"));//поиcк когда номеров больше 1
         assertEquals("", pBook.foundNumbers("Kostia"));//поиcк когда нет номеров
     }
