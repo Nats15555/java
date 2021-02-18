@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class User {// передалать это книга а не юзер у юза поля зтринговые
-    private String userName= "";         // буфер имен пользователей
-    private ArrayList<String> userNumber=new ArrayList<String>();  // бефер номеров пользователей
+    private String userName = "";         // буфер имен пользователей
+    private ArrayList<String> userNumber = new ArrayList<String>();  // бефер номеров пользователей
 
     public User(String userName, ArrayList<String> userNumber) {
-        if(userName!=null && userNumber!=null) {
+        if (userName != null && userNumber != null) {
             this.userNumber = userNumber;
             this.userName = userName;
         }
@@ -30,25 +30,15 @@ public class User {// передалать это книга а не юзер у
 
     @Override
     public String toString() {
-        return "User{" +
+        return "User=" +
                 "userName='" + userName + '\'' +
-                ", userNumber=" + userNumber +
-                '}';
+                ", userNumber=" + userNumber;
     }
 
-    public String getUserName() {
-        return this.userName;
-    }
+    public String getUserName() { return this.userName; }
 
     public ArrayList<String> getUserNumber() {
         return this.userNumber;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public void setUserNumber(ArrayList<String> userNumber) {
-        this.userNumber = userNumber;
-    }
 }

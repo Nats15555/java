@@ -1,11 +1,11 @@
 package phone;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class PhoneBook {
 
-    final String regexNum = "(\\d+|(\\+|-|\\*|#|-))*";
+    public static final String regexNum = "(\\d+|(\\+|-|\\*|#|-))*";
 
     private ArrayList<User> users = new ArrayList<>();//пользователи
 
@@ -35,37 +35,20 @@ public class PhoneBook {
                 '}';
     }
 
-    public boolean addUser(User user)
-    throws Exception{
+    public boolean addUser(User user){
         if (user == null || user.equals(new User(null,null)) || user.getUserNumber().size()!=0) {
             if (user.getUserNumber().size()>0){
                 throw new  IllegalArgumentException("При cоздании пользователя нельзя задавать ему номер, параметр должен быть пуcтой ArreyList");
             }
             return false;
         }
-        ArrayList<String> empty = new ArrayList<>();
-        if (findUser(user.getUserName()).equals(new User("", empty))) {
+        Object userS=findUser(user.getUserName());
+        if (userS==Optional.empty()) {
             this.users.add(user);
             return true;
         }
         return false;
     }
-/*
-    public boolean addUser(String name) {
-        if (name != null) name.trim();
-        else return false;
-        int indexUsers = this.users.size() - 1;
-        while (indexUsers > -1) {
-            User user = this.users.get(indexUsers);
-            if (user.getUserName().equals(name)) {
-                return false;
-            }
-            indexUsers--;
-        }
-
-        return true;
-        // добавление пользовтеля, в номер телефона пуcтоту.
-    }*/
 
     public boolean delUser(User user){
         if (user == null || user.equals(new User(null,null)) || user.getUserNumber().size()!=0) {
@@ -74,44 +57,30 @@ public class PhoneBook {
             }
             return false;
         }
-        ArrayList<String> empty = new ArrayList<>();
-        if (!findUser(user.getUserName()).equals(new User("", empty))) {
-            this.users.remove(findUser(user.getUserName()));
+        Object userS=findUser(user.getUserName());
+        if (userS!=Optional.empty()) {
+            List<String> buffNum = Arrays.asList(foundNumbers(user.getUserName()).split(","));
+            User userF = new User(user.getUserName(),new ArrayList<>(buffNum));
+            int index = this.users.indexOf(userF);
+            this.users.remove(index);
             return true;
         }
         return false;
     }
-/*
-    public boolean delUser(String name) {
-        if (name != null) name.trim();
-        else return false;
-        int indexUser = this.users.size() - 1;
-        while (indexUser > -1) {
-            User user = this.users.get(indexUser);
-            if (user.getUserName().equals(name)) {
-                this.users.remove(indexUser);
-                return true;
-            }
-            indexUser--;
-        }
-        return false;
-        /* удаляет пользователя по имени, если прочер то и прочек удалить(и номер удалить),
-         **
 
-         возвращает состояние выполнения функции, True если выполнилось, False если нет
-    }*/
-
-    public boolean addNumder(String name, String phoneNum)
-            throws Exception {
+    public boolean addNumder(String name, String phoneNum) throws Exception {
         if (name != null && phoneNum != null) {
             name.trim();
             phoneNum.trim();
         } else throw new IllegalAccessException("Не правильный формат номера");
-        if (phoneNum.matches(this.regexNum) && !phoneNum.equals("")) {
-            ArrayList<String> buffNum = findUser(name).getUserNumber();
+        if (phoneNum.matches(regexNum) && !phoneNum.equals("")) {
+            List<String> buffNum = Arrays.asList(foundNumbers(name).split(","));
+            ArrayList<String> num = new ArrayList<>(buffNum);
+            num.removeAll(Collections.singleton(""));
             if (!buffNum.contains(phoneNum)) {
-                buffNum.add(phoneNum);
-                findUser(name).setUserNumber(buffNum);
+                User user = new User(name,num);
+                int index = this.users.indexOf(user);
+                this.users.get(index).getUserNumber().add(phoneNum);
                 return true;
             } else {
                 throw new IllegalStateException("Пользователь которому вы хотите добавить уже имеет этот номер");
@@ -127,20 +96,21 @@ public class PhoneBook {
             name.trim();
             number.trim();
         } else return false;
-        if (number.matches(this.regexNum) && !number.equals("")) {
-            ArrayList<String> buffNum = findUser(name).getUserNumber();
+        if (number.matches(regexNum) && !number.equals("")) {
+            List<String> buffNum = Arrays.asList(foundNumbers(name).split(","));
             if (buffNum.contains(number)) {
-                buffNum.remove(number);
-                findUser(name).setUserNumber(buffNum);
+                User user = new User(name,new ArrayList<String>(buffNum));
+                int index = this.users.indexOf(user);
+                this.users.get(index).getUserNumber().remove(number);
                 return true;
             }
         }
         return false;//Когда не нашел такой номер
-        // удаляет номер по имени.
+        // удаляет номер по имени.*/
     }
 
     public String foundName(String phoneNum) {
-        if (phoneNum != null && phoneNum.matches(this.regexNum) && !phoneNum.equals("")) {
+        if (phoneNum != null && phoneNum.matches(regexNum) && !phoneNum.equals("")) {
             phoneNum.trim();
             int indexUser = this.users.size() - 1;
             while (indexUser > -1) {
@@ -169,17 +139,16 @@ public class PhoneBook {
         else {
             return "Пользователь не может быть Null";//Пользователь не может быть null
         }
-        User user = findUser(name);
-        ArrayList<String> empty = new ArrayList<>();
-        if (!user.equals(new User("", empty))) {
-            return user.getUserNumber().toString().replaceFirst("\\[", "")
-                    .replaceFirst("]", "");
+        Object user = findUser(name);
+        if (user != Optional.empty()) {
+            return Arrays.asList(user.toString().split("=")).get(user.toString().split("=").length-1).replaceFirst("\\[", "")
+                    .replaceFirst("]", "").replaceAll(" ","");
         }
         return "Пользователя нет в cиcтеме";
         //возвращает все номера пользователя
     }
 
-    private User findUser(String name) {
+    private Object findUser(String name) {
         int indexUser = this.users.size() - 1;
         while (indexUser > -1) {
             User user = this.users.get(indexUser);
@@ -188,7 +157,7 @@ public class PhoneBook {
             }
             indexUser--;
         }
-        ArrayList<String> empty = new ArrayList<>();
-        return new User("", empty);//Данного пользователя нет в cиcтеме
+        Optional<User> userOptional = Optional.empty();
+        return userOptional;//Данного пользователя нет в cиcтеме
     }
 }
