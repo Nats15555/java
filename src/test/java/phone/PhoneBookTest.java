@@ -97,7 +97,7 @@ class PhoneBookTest {
     }
 
     @Test
-    void addNumder() throws Exception {
+    void addNumder() throws IllegalStateException, IllegalAccessException {
         ArrayList<User> users = new ArrayList<User>();
         ArrayList<String> numberUserOne = new ArrayList<String>();
         ArrayList<String> numberUserTwo = new ArrayList<String>();

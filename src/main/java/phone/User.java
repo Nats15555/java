@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class User {// передалать это книга а не юзер у юза поля зтринговые
     private String userName = "";         // буфер имен пользователей
-    private ArrayList<String> userNumber = new ArrayList<String>();  // бефер номеров пользователей
+    private List<String> userNumber = new ArrayList<String>();  // бефер номеров пользователей
 
     public User(String userName, List<String> userNumber) {
         if (userName != null && userNumber != null) {
@@ -38,7 +38,7 @@ public class User {// передалать это книга а не юзер у
 
     public String getUserName() { return this.userName; }
 
-    public ArrayList<String> getUserNumber() {
+    public List<String> getUserNumber() {
         return this.userNumber;
     }
 

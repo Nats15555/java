@@ -6,11 +6,11 @@ public class PhoneBook {
 
     public static final String regexNum = "(\\d+|(\\+|-|\\*|#|-))*";
 
-    private ArrayList<User> users = new ArrayList<>();//пользователи
+    private List<User> users = new ArrayList<>();//пользователи
 
     public PhoneBook(List<User> user) {
         if (user != null) {
-            this.users = (ArrayList<User>) user;
+            users.addAll(user);
         }
     }
 
@@ -35,36 +35,28 @@ public class PhoneBook {
     }
 
     public boolean addUser(User user){
-        if (user == null || user.equals(new User(null,null)) || user.getUserNumber().size()!=0) {
-            if (user.getUserNumber().size()>0){
-                throw new  IllegalArgumentException("При cоздании пользователя нельзя задавать ему номер, параметр должен быть пуcтой ArreyList");
+        if(checkEx(user)){
+            Optional<User> userS=findUser(user.getUserName());
+            if (userS.isEmpty()) {
+                this.users.add(user);
+                return true;
             }
-            return false;
-        }
-        Optional<User> userS=findUser(user.getUserName());
-        if (userS.isEmpty()) {
-            this.users.add(user);
-            return true;
         }
         return false;
     }
 
     public boolean delUser(User user){
-        if (user == null || user.equals(new User(null,null)) || user.getUserNumber().size()!=0) {
-            if (user.getUserNumber().size()>0){
-                throw new  IllegalArgumentException("При удалении пользователя нельзя задавать ему номер, параметр должен быть пуcтой ArreyList");
+        if(checkEx(user)) {
+            Optional<User> userS = findUser(user.getUserName());
+            if (userS.isPresent()) {
+                this.users.remove(userS.get());
+                return true;
             }
-            return false;
-        }
-        Optional<User> userS=findUser(user.getUserName());
-        if (userS.isPresent()) {
-            this.users.remove(userS.get());
-            return true;
         }
         return false;
     }
 
-    public boolean addNumder(String name, String phoneNum) throws Exception {
+    public boolean addNumder(String name, String phoneNum) throws IllegalStateException, IllegalAccessException {
         if (name != null && phoneNum != null && phoneNum.matches(regexNum) && !phoneNum.equals("")) {
             name.trim();
             phoneNum.trim();
@@ -101,7 +93,7 @@ public class PhoneBook {
             phoneNum.trim();
             int indexUser = this.users.size() - 1;
             while (indexUser > -1) {
-                ArrayList<String> buff = this.users.get(indexUser).getUserNumber();
+                List<String> buff = this.users.get(indexUser).getUserNumber();
                 if (buff.contains(phoneNum)) {
                             return this.users.get(indexUser).getUserName();
                     }
@@ -121,8 +113,8 @@ public class PhoneBook {
             return "Пользователь не может быть Null";//Пользователь не может быть null
         }
         Optional<User> user = findUser(name);
-        return user.map(value -> value.getUserNumber().toString().replaceFirst("\\[", "")
-                .replaceFirst("]", "").replaceAll(" ", "")).orElse("Пользователя нет в cиcтеме");
+        return user.map(value -> value.getUserNumber().toString().replaceAll("[ |\\[|\\]]", ""))
+                .orElse("Пользователя нет в cиcтеме");
         //возвращает все номера пользователя
     }
 
@@ -136,5 +128,15 @@ public class PhoneBook {
             indexUser--;
         }
         return Optional.<User>empty();//Данного пользователя нет в cиcтеме
+    }
+
+    private boolean checkEx(User user) throws IllegalArgumentException {
+        if (user == null || user.equals(new User(null, null)) || user.getUserNumber().size() != 0) {
+            if (user.getUserNumber().size() > 0) {
+                throw new IllegalArgumentException("При удалении пользователя нельзя задавать ему номер, параметр должен быть пуcтой List");
+            }
+            return false;
+        }
+        return true;
     }
 }
