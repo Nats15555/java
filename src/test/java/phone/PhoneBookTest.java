@@ -44,27 +44,27 @@ class PhoneBookTest {
     }
 
     @Test
-    void addUser(){
+    void addUser() {
         ArrayList<User> users = new ArrayList<User>();
         ArrayList<String> numberUser = new ArrayList<String>();
         numberUser.add("+8585858");
         users.add(new User("Nikola", numberUser));
         PhoneBook pBook = new PhoneBook(users);
-        ArrayList<String> num=new ArrayList<>();
-        ArrayList<String> numNoFree=new ArrayList<>();
+        ArrayList<String> num = new ArrayList<>();
+        ArrayList<String> numNoFree = new ArrayList<>();
         numNoFree.add("+858585855858");
         assertThrows(IllegalArgumentException.class, () -> {
             pBook.addUser(new User("Kostia", numNoFree));
         });//добавление прользователя не c пуcтым cпиcком
-        assertEquals(true, pBook.addUser(new User("m",num)));//проверка на добавлене нового пользователя
-        assertEquals(false, pBook.addUser(new User("Nikola",num)));//проверка когда пользователь уже был (что бы не было одинаковых имен)
+        assertEquals(true, pBook.addUser(new User("m", num)));//проверка на добавлене нового пользователя
+        assertEquals(false, pBook.addUser(new User("Nikola", num)));//проверка когда пользователь уже был (что бы не было одинаковых имен)
         numNoFree.add("+85858585");
         assertThrows(IllegalArgumentException.class, () -> {
             pBook.addUser(new User("Sum", numNoFree));
         });//добавление прользователя не c пуcтым cпиcком(больше чем 1 элементом)
-        assertEquals(false, pBook.addUser(new User("Name",null)));//нельзя один из аргументов null
-        assertEquals(false, pBook.addUser(new User(null,num)));//нельзя один из аргументов null
-        assertEquals(false, pBook.addUser(new User(null,null)));//нельзя оба аргумента null
+        assertEquals(false, pBook.addUser(new User("Name", null)));//нельзя один из аргументов null
+        assertEquals(false, pBook.addUser(new User(null, num)));//нельзя один из аргументов null
+        assertEquals(false, pBook.addUser(new User(null, null)));//нельзя оба аргумента null
     }
 
     @Test
@@ -79,21 +79,21 @@ class PhoneBookTest {
         users.add(new User("Nikola", numberUser));
         users.add(new User("Blad", numberUserT));
         PhoneBook pBook = new PhoneBook(users);
-        ArrayList<String> num=new ArrayList<>();
-        ArrayList<String> numNoFree=new ArrayList<>();
+        ArrayList<String> num = new ArrayList<>();
+        ArrayList<String> numNoFree = new ArrayList<>();
         numNoFree.add("+858585855858");
         assertThrows(IllegalArgumentException.class, () -> {
             pBook.delUser(new User("Kostia", numNoFree));
         });//удалене задав не c пуcтым cпиcком
-        assertEquals(false, pBook.delUser(new User("m",num)));//удалене того кого нет
-        assertEquals(true, pBook.delUser(new User("Nikola",num)));//удалене
+        assertEquals(false, pBook.delUser(new User("m", num)));//удалене того кого нет
+        assertEquals(true, pBook.delUser(new User("Nikola", num)));//удалене
         numNoFree.add("+85858585");
         assertThrows(IllegalArgumentException.class, () -> {
             pBook.delUser(new User("Sum", numNoFree));
         });//удалене не c пуcтым cпиcком(больше чем 1 элементом)
-        assertEquals(false, pBook.delUser(new User("Name",null)));//нельзя один из аргументов null
-        assertEquals(false, pBook.delUser(new User(null,num)));//нельзя один из аргументов null
-        assertEquals(false, pBook.delUser(new User(null,null)));//нельзя оба аргумента null
+        assertEquals(false, pBook.delUser(new User("Name", null)));//нельзя один из аргументов null
+        assertEquals(false, pBook.delUser(new User(null, num)));//нельзя один из аргументов null
+        assertEquals(false, pBook.delUser(new User(null, null)));//нельзя оба аргумента null
     }
 
     @Test
@@ -109,7 +109,7 @@ class PhoneBookTest {
         users.add(new User("Blad", numberUserTwo));
         users.add(new User("Kostia", numberUserThree));
         PhoneBook pBook = new PhoneBook(users);
-        assertEquals(true,pBook.addNumder("Kostia", "+8585858"));// добаление номера человеку без номеров
+        assertEquals(true, pBook.addNumder("Kostia", "+8585858"));// добаление номера человеку без номеров
         assertEquals(true, pBook.addNumder("Blad", "856555"));//добавление когда бльше 1 номера
         assertThrows(IllegalAccessException.class, () -> {
             pBook.addNumder(null, null);

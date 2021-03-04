@@ -26,7 +26,7 @@ class UserTest {
 
     @Test
     void getUserName() {
-        ArrayList<String> numberUserOne =new ArrayList<>();
+        ArrayList<String> numberUserOne = new ArrayList<>();
         ArrayList<String> numberUserTwo = new ArrayList<String>();
         numberUserOne.add("+8585858");
         numberUserTwo.add("+8582222");

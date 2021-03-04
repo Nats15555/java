@@ -36,7 +36,9 @@ public class User {// передалать это книга а не юзер у
                 ", userNumber=" + userNumber;
     }
 
-    public String getUserName() { return this.userName; }
+    public String getUserName() {
+        return this.userName;
+    }
 
     public List<String> getUserNumber() {
         return this.userNumber;

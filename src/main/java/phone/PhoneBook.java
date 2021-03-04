@@ -6,7 +6,7 @@ public class PhoneBook {
 
     public static final String regexNum = "(\\d+|(\\+|-|\\*|#|-))*";
 
-    private List<User> users = new ArrayList<>();//пользователи
+    private final List<User> users = new ArrayList<>();//пользователи
 
     public PhoneBook(List<User> user) {
         if (user != null) {
@@ -34,9 +34,9 @@ public class PhoneBook {
                 '}';
     }
 
-    public boolean addUser(User user){
-        if(checkEx(user)){
-            Optional<User> userS=findUser(user.getUserName());
+    public boolean addUser(User user) {
+        if (checkEx(user)) {
+            Optional<User> userS = findUser(user.getUserName());
             if (userS.isEmpty()) {
                 this.users.add(user);
                 return true;
@@ -45,8 +45,8 @@ public class PhoneBook {
         return false;
     }
 
-    public boolean delUser(User user){
-        if(checkEx(user)) {
+    public boolean delUser(User user) {
+        if (checkEx(user)) {
             Optional<User> userS = findUser(user.getUserName());
             if (userS.isPresent()) {
                 this.users.remove(userS.get());
@@ -61,13 +61,13 @@ public class PhoneBook {
             name.trim();
             phoneNum.trim();
         } else throw new IllegalAccessException("Не правильный формат номера");
-            User user=findUser(name).get();
-            if (!user.getUserNumber().contains(phoneNum)) {
-                this.users.get(this.users.indexOf(user)).getUserNumber().add(phoneNum);
-                return true;
-            } else {
-                throw new IllegalStateException("Пользователь которому вы хотите добавить уже имеет этот номер");
-            }
+        User user = findUser(name).get();
+        if (!user.getUserNumber().contains(phoneNum)) {
+            this.users.get(this.users.indexOf(user)).getUserNumber().add(phoneNum);
+            return true;
+        } else {
+            throw new IllegalStateException("Пользователь которому вы хотите добавить уже имеет этот номер");
+        }
         /*добавляет номер по имени,
          возвращает состояние выполнения функции, True если выполнилось, False если нет*/
     }
@@ -95,8 +95,8 @@ public class PhoneBook {
             while (indexUser > -1) {
                 List<String> buff = this.users.get(indexUser).getUserNumber();
                 if (buff.contains(phoneNum)) {
-                            return this.users.get(indexUser).getUserName();
-                    }
+                    return this.users.get(indexUser).getUserName();
+                }
                 indexUser--;
             }
             return "Такого номера нет ни у кого";
