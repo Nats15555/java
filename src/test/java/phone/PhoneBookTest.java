@@ -97,7 +97,7 @@ class PhoneBookTest {
     }
 
     @Test
-    void addNumder() throws IllegalStateException, IllegalAccessException {
+    void addNumder() throws IllegalAccessException {
         ArrayList<User> users = new ArrayList<User>();
         ArrayList<String> numberUserOne = new ArrayList<String>();
         ArrayList<String> numberUserTwo = new ArrayList<String>();
@@ -116,16 +116,14 @@ class PhoneBookTest {
         });//проверка на нулл
         assertEquals(true, pBook.addNumder("Nikola", "232323"));//добавлене номера которого нет у человека
         assertEquals(true, pBook.addNumder("Nikola", "+85"));//добавлене  1 номер
-        assertThrows(IllegalStateException.class, () -> {
-            pBook.addNumder("Kostia", "+8585858");
-        });//добавленеие похожего
+        assertEquals(false, pBook.addNumder("Kostia", "+8585858"));//добавленеие похожего
         assertThrows(IllegalAccessException.class, () -> {
             pBook.addNumder("Blad", "5/5/");
         });//при неправильном вооде номера
     }
 
     @Test
-    void delNumder() {
+    void delNumder() throws IllegalAccessException {
         ArrayList<User> users = new ArrayList<User>();
         ArrayList<String> numberUserOne = new ArrayList<String>();
         ArrayList<String> numberUserTwo = new ArrayList<String>();
@@ -138,7 +136,12 @@ class PhoneBookTest {
         users.add(new User("Kostia", numberUserThree));
         PhoneBook pBook = new PhoneBook(users);
         assertEquals(true, pBook.delNumder("Blad", "8585858555"));//удаление когда бльше 1 номера
-        assertEquals(false, pBook.delNumder(null, null));//проверка на нулл
+        assertThrows(IllegalAccessException.class, () -> {
+            pBook.addNumder(null, null);
+        });//проверка на нулл
+        assertThrows(IllegalAccessException.class, () -> {
+            pBook.addNumder("Blad", "5/5/");
+        });
         assertEquals(false, pBook.delNumder("Nikola", "8585858555"));//удаление номера которого нет у человека
         assertEquals(true, pBook.delNumder("Nikola", "+8585858"));//удалене когда 1 номер
         assertEquals(false, pBook.delNumder("Kostia", "+8585858"));//удаление когда нет номеров
@@ -178,10 +181,10 @@ class PhoneBookTest {
         users.add(new User("Blad", numberUserTwo));
         users.add(new User("Kostia", numberUserThree));
         PhoneBook pBook = new PhoneBook(users);
-        assertEquals("Пользователь не может быть Null", pBook.foundNumbers(null));//null введеный
-        assertEquals("+8585858", pBook.foundNumbers("Nikola"));//поиcк когда номеров 1
-        assertEquals("Пользователя нет в cиcтеме", pBook.foundNumbers("Anna"));//нет данного пользователя в cиcтеме
-        assertEquals("+8582222,8585858555,8585855", pBook.foundNumbers("Blad"));//поиcк когда номеров больше 1
-        assertEquals("", pBook.foundNumbers("Kostia"));//поиcк когда нет номеров
+        assertEquals("Пользователь не может быть Null", pBook.foundNumbers(null).toString().replaceAll("[\\[|\\]]", ""));//null введеный
+        assertEquals("+8585858", pBook.foundNumbers("Nikola").toString().replaceAll("[\\[|\\]]", ""));//поиcк когда номеров 1
+        assertEquals("Пользователя нет в cиcтеме", pBook.foundNumbers("Anna").toString().replaceAll("[\\[|\\]]", ""));//нет данного пользователя в cиcтеме
+        assertEquals("+8582222, 8585858555, 8585855", pBook.foundNumbers("Blad").toString().replaceAll("[\\[|\\]]", ""));//поиcк когда номеров больше 1
+        assertEquals("", pBook.foundNumbers("Kostia").toString().replaceAll("[\\[|\\]]", ""));//поиcк когда нет номеров
     }
 }
