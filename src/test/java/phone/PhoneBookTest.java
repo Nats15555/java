@@ -187,4 +187,114 @@ class PhoneBookTest {
         assertEquals("+8582222, 8585858555, 8585855", pBook.foundNumbers("Blad").toString().replaceAll("[\\[|\\]]", ""));//поиcк когда номеров больше 1
         assertEquals("", pBook.foundNumbers("Kostia").toString().replaceAll("[\\[|\\]]", ""));//поиcк когда нет номеров
     }
+
+    /*@Test
+    void tread1() throws InterruptedException {
+        ArrayList<User> users = new ArrayList<User>();
+        ArrayList<String> numberUser = new ArrayList<String>();
+        numberUser.add("+8585858");
+        users.add(new User("Nikola", numberUser));
+        PhoneBook pBook = new PhoneBook(users);
+        ArrayList<String> num = new ArrayList<>();
+        Thread thread1 = new Thread(() -> {
+            for (int i = 1; i <= 20; i++) {
+                pBook.addUser(new User("" + i, num));
+            }
+        });
+        Thread thread2 = new Thread(() -> {
+            for (int i = 1; i <= 10; i++) {
+                pBook.addUser(new User("" + i, num));
+            }
+        });
+        thread1.start();
+        thread2.start();
+        thread1.join();
+        thread2.join();
+
+        System.out.println(pBook.toString());
+        System.out.println(pBook.toString().split(",").length);
+    }*/
+
+    @Test//это когда одновременно пишут
+    void tread2() throws InterruptedException {
+        ArrayList<User> users = new ArrayList<User>();
+        ArrayList<String> numberUser = new ArrayList<String>();
+        numberUser.add("+8585858");
+        numberUser.add("+855252585");
+        ArrayList<String> numberUser1 = new ArrayList<String>();
+        numberUser1.add("+85");
+        numberUser1.add("+858500");
+        ArrayList<String> numberUser2 = new ArrayList<String>();
+        numberUser2.add("+8585");
+        numberUser2.add("+858512");
+        users.add(new User("Nikola", numberUser));
+        users.add(new User("Blad", numberUser1));
+        users.add(new User("Kostia", numberUser2));
+        PhoneBook pBook = new PhoneBook(users);
+        ArrayList<String> num = new ArrayList<>();
+        Thread thread1 = new Thread(() -> {
+            try {
+                pBook.delNumder("Nikola", "+8585858");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            try {
+                pBook.addNumder("Kostia", "+858515424");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            pBook.addUser(new User("Kolia", num));
+            pBook.addUser(new User("Nika", num));
+        });
+        Thread thread2 = new Thread(() -> {
+            try {
+                pBook.delNumder("Nikola", "+8585");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            try {
+                pBook.addNumder("Nikola", "+858522222");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            try {
+                pBook.delNumder("Blad", "+858500");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            pBook.addUser(new User("Vlad", num));
+            pBook.addUser(new User("Anna", num));
+        });
+        Thread thread3 = new Thread(() -> {
+            try {
+                pBook.addNumder("Blad", "+858522");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            try {
+                pBook.delNumder("Nikola", "+855252585");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            try {
+                pBook.delNumder("Kostia", "+8585");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            pBook.addUser(new User("Vlad", num));
+        });
+        thread1.start();
+        thread2.start();
+        thread3.start();
+        thread1.join();
+        thread2.join();
+        thread3.join();
+        assertEquals(true,pBook.toString().equals("PhoneBook{users=[User=userName='Nikola', userNumber=[+858522222], " +
+                "User=userName='Blad', userNumber=[+85, +858522], " +
+                "User=userName='Kostia', userNumber=[+858512, +858515424], " +
+                "User=userName='Kolia', userNumber=[], " +
+                "User=userName='Nika', userNumber=[], " +
+                "User=userName='Vlad', userNumber=[], " +
+                "User=userName='Anna', userNumber=[]]}"));
+    }
 }

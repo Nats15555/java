@@ -13,7 +13,6 @@ public class PhoneBook {
      * Поле телефонная книга(хранятcя User)
      */
     private final List<User> users = new ArrayList<>();
-
     /**
      * Конcтруктор
      */
@@ -63,8 +62,10 @@ public class PhoneBook {
         if (checkEx(user)) {
             Optional<User> userS = findUser(user.getUserName());
             if (userS.isEmpty()) {
-                this.users.add(user);
-                return true;
+                synchronized (users) {
+                    this.users.add(user);
+                    return true;
+                }
             }
         }
         return false;
@@ -81,8 +82,10 @@ public class PhoneBook {
         if (checkEx(user)) {
             Optional<User> userS = findUser(user.getUserName());
             if (userS.isPresent()) {
-                this.users.remove(userS.get());
-                return true;
+                synchronized (users) {
+                    this.users.remove(userS.get());
+                    return true;
+                }
             }
         }
         return false;
@@ -101,7 +104,7 @@ public class PhoneBook {
             name.trim();
             phoneNum.trim();
         } else throw new IllegalAccessException("Не правильный формат номера");
-        boolean chekDel = true;
+        boolean  chekDel = true;
         return checkNumber(name, phoneNum, chekDel);
     }
 
@@ -131,15 +134,17 @@ public class PhoneBook {
     public String foundName(String phoneNum) {
         if (phoneNum != null && phoneNum.matches(regexNum) && !phoneNum.equals("")) {
             phoneNum.trim();
-            int indexUser = this.users.size() - 1;
-            while (indexUser > -1) {
-                List<String> buff = this.users.get(indexUser).getUserNumber();
-                if (buff.contains(phoneNum)) {
-                    return this.users.get(indexUser).getUserName();
+            synchronized (this.users) {
+                int indexUser = this.users.size() - 1;
+                while (indexUser > -1) {
+                    List<String> buff = this.users.get(indexUser).getUserNumber();
+                    if (buff.contains(phoneNum)) {
+                        return this.users.get(indexUser).getUserName();
+                    }
+                    indexUser--;
                 }
-                indexUser--;
+                return "Такого номера нет ни у кого";
             }
-            return "Такого номера нет ни у кого";
         } else {
             return "Не правильный формат номера";
         }
@@ -162,8 +167,10 @@ public class PhoneBook {
         massage.remove(0);
         massage.add("Пользователя нет в cиcтеме");
         Optional<User> user = findUser(name);
-        return user.map(User::getUserNumber)
-                .orElse(massage);
+        synchronized (user.get()) {
+            return user.map(User::getUserNumber)
+                    .orElse(massage);
+        }
     }
 
     /**
@@ -203,17 +210,22 @@ public class PhoneBook {
 
     private boolean checkNumber(String name, String number, boolean chekDel) {
         User user = findUser(name).get();
-        if (user.getUserNumber().contains(number)) {
-            if (!chekDel) {
-                this.users.get(this.users.indexOf(user)).getUserNumber().remove(number);
-                return true;
+            if (user.getUserNumber().contains(number)) {
+                if (!chekDel) {
+                    synchronized (user) {
+                        this.users.get(this.users.indexOf(user)).getUserNumber().remove(number);
+                        return true;
+                    }
+                }
+            } else {
+                if (chekDel) {
+                    synchronized (user) {
+                        this.users.get(this.users.indexOf(user)).getUserNumber().add(number);
+                        return true;
+                    }
+                }
             }
-        } else {
-            if (chekDel) {
-                this.users.get(this.users.indexOf(user)).getUserNumber().add(number);
-                return true;
-            }
-        }
+
         return false;
     }
 }
