@@ -97,7 +97,7 @@ class PhoneBookTest {
     }
 
     @Test
-    void addNumder() throws IllegalAccessException {
+    void addNumber() throws IllegalAccessException {
         ArrayList<User> users = new ArrayList<User>();
         ArrayList<String> numberUserOne = new ArrayList<String>();
         ArrayList<String> numberUserTwo = new ArrayList<String>();
@@ -109,21 +109,21 @@ class PhoneBookTest {
         users.add(new User("Blad", numberUserTwo));
         users.add(new User("Kostia", numberUserThree));
         PhoneBook pBook = new PhoneBook(users);
-        assertEquals(true, pBook.addNumder("Kostia", "+8585858"));// добаление номера человеку без номеров
-        assertEquals(true, pBook.addNumder("Blad", "856555"));//добавление когда бльше 1 номера
+        assertEquals(true, pBook.addNumber("Kostia", "+8585858"));// добаление номера человеку без номеров
+        assertEquals(true, pBook.addNumber("Blad", "856555"));//добавление когда бльше 1 номера
         assertThrows(IllegalAccessException.class, () -> {
-            pBook.addNumder(null, null);
+            pBook.addNumber(null, null);
         });//проверка на нулл
-        assertEquals(true, pBook.addNumder("Nikola", "232323"));//добавлене номера которого нет у человека
-        assertEquals(true, pBook.addNumder("Nikola", "+85"));//добавлене  1 номер
-        assertEquals(false, pBook.addNumder("Kostia", "+8585858"));//добавленеие похожего
+        assertEquals(true, pBook.addNumber("Nikola", "232323"));//добавлене номера которого нет у человека
+        assertEquals(true, pBook.addNumber("Nikola", "+85"));//добавлене  1 номер
+        assertEquals(false, pBook.addNumber("Kostia", "+8585858"));//добавленеие похожего
         assertThrows(IllegalAccessException.class, () -> {
-            pBook.addNumder("Blad", "5/5/");
+            pBook.addNumber("Blad", "5/5/");
         });//при неправильном вооде номера
     }
 
     @Test
-    void delNumder() throws IllegalAccessException {
+    void delNumber() throws IllegalAccessException {
         ArrayList<User> users = new ArrayList<User>();
         ArrayList<String> numberUserOne = new ArrayList<String>();
         ArrayList<String> numberUserTwo = new ArrayList<String>();
@@ -135,16 +135,16 @@ class PhoneBookTest {
         users.add(new User("Blad", numberUserTwo));
         users.add(new User("Kostia", numberUserThree));
         PhoneBook pBook = new PhoneBook(users);
-        assertEquals(true, pBook.delNumder("Blad", "8585858555"));//удаление когда бльше 1 номера
+        assertEquals(true, pBook.delNumber("Blad", "8585858555"));//удаление когда бльше 1 номера
         assertThrows(IllegalAccessException.class, () -> {
-            pBook.addNumder(null, null);
+            pBook.addNumber(null, null);
         });//проверка на нулл
         assertThrows(IllegalAccessException.class, () -> {
-            pBook.addNumder("Blad", "5/5/");
+            pBook.addNumber("Blad", "5/5/");
         });
-        assertEquals(false, pBook.delNumder("Nikola", "8585858555"));//удаление номера которого нет у человека
-        assertEquals(true, pBook.delNumder("Nikola", "+8585858"));//удалене когда 1 номер
-        assertEquals(false, pBook.delNumder("Kostia", "+8585858"));//удаление когда нет номеров
+        assertEquals(false, pBook.delNumber("Nikola", "8585858555"));//удаление номера которого нет у человека
+        assertEquals(true, pBook.delNumber("Nikola", "+8585858"));//удалене когда 1 номер
+        assertEquals(false, pBook.delNumber("Kostia", "+8585858"));//удаление когда нет номеров
     }
 
     @Test
@@ -234,12 +234,12 @@ class PhoneBookTest {
         ArrayList<String> num = new ArrayList<>();
         Thread thread1 = new Thread(() -> {
             try {
-                pBook.delNumder("Nikola", "+8585858");
+                pBook.delNumber("Nikola", "+8585858");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
             try {
-                pBook.addNumder("Kostia", "+858515424");
+                pBook.addNumber("Kostia", "+858515424");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -248,17 +248,17 @@ class PhoneBookTest {
         });
         Thread thread2 = new Thread(() -> {
             try {
-                pBook.delNumder("Nikola", "+8585");
+                pBook.delNumber("Nikola", "+8585");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
             try {
-                pBook.addNumder("Nikola", "+858522222");
+                pBook.addNumber("Nikola", "+858522222");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
             try {
-                pBook.delNumder("Blad", "+858500");
+                pBook.delNumber("Blad", "+858500");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -267,17 +267,17 @@ class PhoneBookTest {
         });
         Thread thread3 = new Thread(() -> {
             try {
-                pBook.addNumder("Blad", "+858522");
+                pBook.addNumber("Blad", "+858522");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
             try {
-                pBook.delNumder("Nikola", "+855252585");
+                pBook.delNumber("Nikola", "+855252585");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
             try {
-                pBook.delNumder("Kostia", "+8585");
+                pBook.delNumber("Kostia", "+8585");
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

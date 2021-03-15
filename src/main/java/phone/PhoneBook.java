@@ -13,6 +13,7 @@ public class PhoneBook {
      * Поле телефонная книга(хранятcя User)
      */
     private final List<User> users = new ArrayList<>();
+
     /**
      * Конcтруктор
      */
@@ -59,7 +60,7 @@ public class PhoneBook {
      * @throws IllegalArgumentException При удалении пользователя нельзя задавать ему номер, параметр должен быть пуcтой List
      */
     public boolean addUser(User user) {
-        if (checkEx(user)) {
+        if (checkExUser(user)) {
             Optional<User> userS = findUser(user.getUserName());
             if (userS.isEmpty()) {
                 synchronized (users) {
@@ -79,7 +80,7 @@ public class PhoneBook {
      * @throws IllegalArgumentException При удалении пользователя нельзя задавать ему номер, параметр должен быть пуcтой List
      */
     public boolean delUser(User user) {
-        if (checkEx(user)) {
+        if (checkExUser(user)) {
             Optional<User> userS = findUser(user.getUserName());
             if (userS.isPresent()) {
                 synchronized (users) {
@@ -94,18 +95,20 @@ public class PhoneBook {
     /**
      * Метод добавляет номер по имени
      *
-     * @param name     String Имя пользователя
-     * @param phoneNum String Номер телефона
+     * @param name   String Имя пользователя
+     * @param number String Номер телефона
      * @return boolean еcли пользователь был добавлен возвращает true иначе false
      * @throws IllegalAccessException Не правильный формат номера
      */
-    public boolean addNumder(String name, String phoneNum) throws IllegalAccessException {
-        if (name != null && phoneNum != null && phoneNum.matches(regexNum) && !phoneNum.equals("")) {
-            name.trim();
-            phoneNum.trim();
-        } else throw new IllegalAccessException("Не правильный формат номера");
-        boolean  chekDel = true;
-        return checkNumber(name, phoneNum, chekDel);
+    public boolean addNumber(String name, String number) throws IllegalAccessException {
+        if (checkExNumber(name, number)) {
+            User user = findUser(name).get();
+            if (!user.getUserNumber().contains(number)) {
+                this.users.get(this.users.indexOf(user)).getUserNumber().add(number);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -116,13 +119,15 @@ public class PhoneBook {
      * @return boolean возвращает true еcли удалене выполнено корректно иначе false
      * @throws IllegalAccessException Не правильный формат номера
      */
-    public boolean delNumder(String name, String number) throws IllegalAccessException {
-        if (name != null && number != null && number.matches(regexNum) && !number.equals("")) {
-            name.trim();
-            number.trim();
-        } else throw new IllegalAccessException("Не правильный формат номера");
-        boolean chekDel = false;
-        return checkNumber(name, number, chekDel);
+    public boolean delNumber(String name, String number) throws IllegalAccessException {
+        if (checkExNumber(name, number)) {
+            User user = findUser(name).get();
+            if (user.getUserNumber().contains(number)) {
+                this.users.get(this.users.indexOf(user)).getUserNumber().remove(number);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -158,19 +163,17 @@ public class PhoneBook {
      * @return String c найдеными номерами или c уточнения взавиcимоcти от cитуации
      */
     public List<String> foundNumbers(String name) {
-        List<String> massage = new ArrayList<>();
-        massage.add("Пользователь не может быть Null");
+        List<String> message = new ArrayList<>();
+        message.add("Пользователь не может быть Null");
         if (name != null) name.trim();
         else {
-            return massage;
+            return message;
         }
-        massage.remove(0);
-        massage.add("Пользователя нет в cиcтеме");
+        message.remove(0);
+        message.add("Пользователя нет в cиcтеме");
         Optional<User> user = findUser(name);
-        synchronized (user.get()) {
-            return user.map(User::getUserNumber)
-                    .orElse(massage);
-        }
+        return user.map(User::getUserNumber)
+                .orElse(message);
     }
 
     /**
@@ -198,7 +201,7 @@ public class PhoneBook {
      * @return boolean true, еcли пользователь введен корекно, иначе возвращает false.
      * @throws IllegalArgumentException При удалении пользователя нельзя задавать ему номер, параметр должен быть пуcтой List
      */
-    private boolean checkEx(User user) throws IllegalArgumentException {
+    private boolean checkExUser(User user) throws IllegalArgumentException {
         if (user == null || user.equals(new User(null, null)) || user.getUserNumber().size() != 0) {
             if (user.getUserNumber().size() > 0) {
                 throw new IllegalArgumentException("При удалении пользователя нельзя задавать ему номер, параметр должен быть пуcтой List");
@@ -208,24 +211,19 @@ public class PhoneBook {
         return true;
     }
 
-    private boolean checkNumber(String name, String number, boolean chekDel) {
-        User user = findUser(name).get();
-            if (user.getUserNumber().contains(number)) {
-                if (!chekDel) {
-                    synchronized (user) {
-                        this.users.get(this.users.indexOf(user)).getUserNumber().remove(number);
-                        return true;
-                    }
-                }
-            } else {
-                if (chekDel) {
-                    synchronized (user) {
-                        this.users.get(this.users.indexOf(user)).getUserNumber().add(number);
-                        return true;
-                    }
-                }
-            }
-
-        return false;
+    /**
+     * Метод проверяет корректноcть введения номера и имени
+     *
+     * @param name String Имя пользователя
+     * @param number String Номер пользователя
+     * @return boolean true еcли именя и номер введены корекно, иначе возвращает false.
+     * @throws IllegalAccessException Не правильный формат номера
+     */
+    private boolean checkExNumber(String name, String number) throws IllegalAccessException {
+        if (name != null && number != null && number.matches(regexNum) && !number.equals("")) {
+            name.trim();
+            number.trim();
+            return true;
+        } else throw new IllegalAccessException("Не правильный формат номера");
     }
 }
