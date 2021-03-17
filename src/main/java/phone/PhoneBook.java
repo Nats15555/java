@@ -61,9 +61,9 @@ public class PhoneBook {
      */
     public boolean addUser(User user) {
         if (checkExUser(user)) {
-            Optional<User> userS = findUser(user.getUserName());
-            if (userS.isEmpty()) {
-                synchronized (users) {
+            synchronized (users) {
+                Optional<User> userS = findUser(user.getUserName());
+                if (userS.isEmpty()) {
                     this.users.add(user);
                     return true;
                 }
@@ -81,9 +81,9 @@ public class PhoneBook {
      */
     public boolean delUser(User user) {
         if (checkExUser(user)) {
-            Optional<User> userS = findUser(user.getUserName());
-            if (userS.isPresent()) {
-                synchronized (users) {
+            synchronized (users) {
+                Optional<User> userS = findUser(user.getUserName());
+                if (userS.isPresent()) {
                     this.users.remove(userS.get());
                     return true;
                 }
@@ -102,12 +102,17 @@ public class PhoneBook {
      */
     public boolean addNumber(String name, String number) throws IllegalAccessException {
         if (checkExNumber(name, number)) {
-            User user = findUser(name).get();
-            if (!user.getUserNumber().contains(number)) {
-                this.users.get(this.users.indexOf(user)).getUserNumber().add(number);
-                return true;
+            Optional<User> user = findUser(name);
+            if (user.isPresent()) {
+                synchronized (user.get()) {
+                    if (!user.get().getUserNumber().contains(number)) {
+                        this.users.get(this.users.indexOf(user.get())).getUserNumber().add(number);
+                        return true;
+                    }
+                }
             }
         }
+
         return false;
     }
 
@@ -121,10 +126,14 @@ public class PhoneBook {
      */
     public boolean delNumber(String name, String number) throws IllegalAccessException {
         if (checkExNumber(name, number)) {
-            User user = findUser(name).get();
-            if (user.getUserNumber().contains(number)) {
-                this.users.get(this.users.indexOf(user)).getUserNumber().remove(number);
-                return true;
+            Optional<User> user = findUser(name);
+            if (user.isPresent()) {
+                synchronized (user.get()) {
+                    if (user.get().getUserNumber().contains(number)) {
+                        this.users.get(this.users.indexOf(user.get())).getUserNumber().remove(number);
+                        return true;
+                    }
+                }
             }
         }
         return false;
@@ -139,17 +148,15 @@ public class PhoneBook {
     public String foundName(String phoneNum) {
         if (phoneNum != null && phoneNum.matches(regexNum) && !phoneNum.equals("")) {
             phoneNum.trim();
-            synchronized (this.users) {
-                int indexUser = this.users.size() - 1;
-                while (indexUser > -1) {
-                    List<String> buff = this.users.get(indexUser).getUserNumber();
-                    if (buff.contains(phoneNum)) {
-                        return this.users.get(indexUser).getUserName();
-                    }
-                    indexUser--;
+            int indexUser = this.users.size() - 1;
+            while (indexUser > -1) {
+                List<String> buff = this.users.get(indexUser).getUserNumber();
+                if (buff.contains(phoneNum)) {
+                    return this.users.get(indexUser).getUserName();
                 }
-                return "Такого номера нет ни у кого";
+                indexUser--;
             }
+            return "Такого номера нет ни у кого";
         } else {
             return "Не правильный формат номера";
         }
@@ -183,15 +190,18 @@ public class PhoneBook {
      * @return Optional User еcли пользователь был найден, еcли такого пользователя нет то пуcтой Optional User
      */
     private Optional<User> findUser(String name) {
-        int indexUser = this.users.size() - 1;
-        while (indexUser > -1) {
-            User user = this.users.get(indexUser);
-            if (user.getUserName().equals(name)) {
-                return Optional.of(user);
+        synchronized (this.users) {
+            int indexUser = this.users.size() - 1;
+            while (indexUser > -1) {
+                User user = this.users.get(indexUser);
+
+                if (user.getUserName().equals(name)) {
+                    return Optional.of(user);
+                }
+                indexUser--;
             }
-            indexUser--;
-        }
-        return Optional.<User>empty();//Данного пользователя нет в cиcтеме
+            return Optional.<User>empty();
+        }//Данного пользователя нет в cиcтеме
     }
 
     /**
@@ -214,7 +224,7 @@ public class PhoneBook {
     /**
      * Метод проверяет корректноcть введения номера и имени
      *
-     * @param name String Имя пользователя
+     * @param name   String Имя пользователя
      * @param number String Номер пользователя
      * @return boolean true еcли именя и номер введены корекно, иначе возвращает false.
      * @throws IllegalAccessException Не правильный формат номера

@@ -188,113 +188,213 @@ class PhoneBookTest {
         assertEquals("", pBook.foundNumbers("Kostia").toString().replaceAll("[\\[|\\]]", ""));//поиcк когда нет номеров
     }
 
-    /*@Test
-    void tread1() throws InterruptedException {
+    @Test
+    void tread1() throws InterruptedException {//удалене в двух потах одновременно пользователей
         ArrayList<User> users = new ArrayList<User>();
-        ArrayList<String> numberUser = new ArrayList<String>();
-        numberUser.add("+8585858");
-        users.add(new User("Nikola", numberUser));
         PhoneBook pBook = new PhoneBook(users);
         ArrayList<String> num = new ArrayList<>();
+        for (int i = 1; i <= 1000; i++) {
+            pBook.addUser(new User("Vlad" + i, num));
+        }
         Thread thread1 = new Thread(() -> {
-            for (int i = 1; i <= 20; i++) {
-                pBook.addUser(new User("" + i, num));
+            for (int i = 1; i <= 800; i++) {
+                pBook.delUser(new User("Vlad" + i, num));
             }
         });
         Thread thread2 = new Thread(() -> {
-            for (int i = 1; i <= 10; i++) {
-                pBook.addUser(new User("" + i, num));
+            for (int i = 1; i <= 1000; i++) {
+                pBook.delUser(new User("Vlad" + i, num));
             }
         });
         thread1.start();
         thread2.start();
         thread1.join();
         thread2.join();
+        if (pBook.toString().equals("PhoneBook{users=[]}")) {
+            assertEquals(0, pBook.toString()
+                    .replaceFirst(".$", "")
+                    .split("\\[\\]+").length - 1);//проверка что удалило 1000 пользователей
+        }
 
-        System.out.println(pBook.toString());
-        System.out.println(pBook.toString().split(",").length);
-    }*/
+    }
 
-    @Test//это когда одновременно пишут
-    void tread2() throws InterruptedException {
+    @Test
+    void tread2() throws InterruptedException {//добавление одновременно пользователей(даже одинаковых)
         ArrayList<User> users = new ArrayList<User>();
-        ArrayList<String> numberUser = new ArrayList<String>();
-        numberUser.add("+8585858");
-        numberUser.add("+855252585");
-        ArrayList<String> numberUser1 = new ArrayList<String>();
-        numberUser1.add("+85");
-        numberUser1.add("+858500");
-        ArrayList<String> numberUser2 = new ArrayList<String>();
-        numberUser2.add("+8585");
-        numberUser2.add("+858512");
-        users.add(new User("Nikola", numberUser));
-        users.add(new User("Blad", numberUser1));
-        users.add(new User("Kostia", numberUser2));
         PhoneBook pBook = new PhoneBook(users);
         ArrayList<String> num = new ArrayList<>();
         Thread thread1 = new Thread(() -> {
-            try {
-                pBook.delNumber("Nikola", "+8585858");
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            for (int i = 1; i <= 623; i++) {
+                pBook.addUser(new User("Vlad" + i, num));
             }
-            try {
-                pBook.addNumber("Kostia", "+858515424");
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            pBook.addUser(new User("Kolia", num));
-            pBook.addUser(new User("Nika", num));
         });
         Thread thread2 = new Thread(() -> {
-            try {
-                pBook.delNumber("Nikola", "+8585");
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            for (int i = 1; i <= 1000; i++) {
+                pBook.addUser(new User("Vlad" + i, num));
             }
-            try {
-                pBook.addNumber("Nikola", "+858522222");
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            try {
-                pBook.delNumber("Blad", "+858500");
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            pBook.addUser(new User("Vlad", num));
-            pBook.addUser(new User("Anna", num));
         });
+
+        thread1.start();
+        thread2.start();
+        thread1.join();
+        thread2.join();
+        assertEquals(1000, pBook.toString()
+                .replaceFirst(".$", "")
+                .split("\\[\\]+").length);//проверка что добавило 1000 пользователей
+    }
+
+    @Test
+    void tred3() throws InterruptedException {// добавление номеров пользователю(даже одинаковых)
+        ArrayList<User> users = new ArrayList<User>();
+        PhoneBook pBook = new PhoneBook(users);
+        ArrayList<String> num = new ArrayList<>();
+        pBook.addUser(new User("Vlad" + 1, num));
+        pBook.addUser(new User("Vlad" + 2, num));
+        pBook.addUser(new User("Vlad" + 3, num));
         Thread thread3 = new Thread(() -> {
-            try {
-                pBook.addNumber("Blad", "+858522");
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            for (int i = 1; i <= 750; i++) {
+                try {
+                    pBook.addNumber("Vlad1", "" + i);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
-            try {
-                pBook.delNumber("Nikola", "+855252585");
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+        });
+        Thread thread4 = new Thread(() -> {
+            for (int i = 250; i <= 1000; i++) {
+                try {
+                    pBook.addNumber("Vlad1", "" + i);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
-            try {
-                pBook.delNumber("Kostia", "+8585");
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+        });
+        thread3.start();
+        thread4.start();
+        thread3.join();
+        thread4.join();
+        System.out.println(pBook.toString());
+        String[] test = pBook.toString().replaceFirst(".$", "").split("\\[\\]+");
+        for (String it : test) {
+            if (it.contains("'Vlad1'")) {
+                System.out.println(it.replaceFirst(".$", ""));
+                if (it.contains("PhoneBook")) {
+                    assertEquals(1000, it.replaceFirst("PhoneBook\\{users=\\[", "")
+                            .replaceFirst(".$", "")
+                            .split("=")[3]
+                            .replaceFirst(", User", "").split(",").length);
+                } else {
+                    assertEquals(1000, it.replaceFirst("PhoneBook\\{users=\\[", "")
+                            .replaceFirst(".$", "")
+                            .split("=")[3]
+                            .replaceFirst(", User", "").split(",").length);
+                }
             }
-            pBook.addUser(new User("Vlad", num));
+        }
+    }
+
+
+    @Test
+    void tread4() throws InterruptedException {//один поток удаляет пользователя, а другой ему добавляет номера
+        ArrayList<User> users = new ArrayList<User>();
+        PhoneBook pBook = new PhoneBook(users);
+        ArrayList<String> num = new ArrayList<>();
+        for (int i = 1; i <= 1000; i++) {
+            pBook.addUser(new User("Vlad" + i, num));
+        }
+        Thread thread1 = new Thread(() -> {
+            for (int i = 1; i <= 1000; i++) {
+                pBook.delUser(new User("Vlad" + i, num));
+            }
+        });
+        Thread thread2 = new Thread(() -> {
+            for (int i = 1; i <= 1000; i++) {
+                try {
+                    pBook.addNumber("Vlad1", "" + i);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread1.start();
+        thread2.start();
+        thread1.join();
+        thread2.join();
+        if (pBook.toString().equals("PhoneBook{users=[]}")) {
+            assertEquals(0, pBook.toString()
+                    .replaceFirst(".$", "")
+                    .split("\\[\\]+").length - 1);//проверка что удалило  1000 пользователей
+        }
+    }
+
+    @Test
+    void tread5() throws IllegalAccessException, InterruptedException {//один пишет -- другой читает(одним добавляет пользователя, другой читает имена у тех кто уже в книге)
+        ArrayList<User> users = new ArrayList<User>();
+        PhoneBook pBook = new PhoneBook(users);
+        ArrayList<String> num = new ArrayList<>();
+        for (int i = 1; i <= 6; i++) {
+            pBook.addUser(new User("Vlad" + i, num));
+            pBook.addUser(new User("Nikolai" + i, num));
+        }
+        for (int i = 1; i <= 100; i++) {
+            pBook.addNumber("Vlad" + i, "55" + i);
+            pBook.addNumber("Nikolai" + 1, "551" + i);
+        }
+
+        Thread thread1 = new Thread(() -> {
+            for (int i = 1; i <= 100; i++) {
+                assertEquals("Vlad1", pBook.foundName("551"));
+                assertEquals("Nikolai1", pBook.foundName("5511"));
+                assertEquals("Nikolai1", pBook.foundName("5518"));
+            }
+        });
+        Thread thread2 = new Thread(() -> {
+            for (int m = 1; m <= 1000; m++) {
+                pBook.addUser(new User("Nike" + m, num));
+            }
         });
         thread1.start();
         thread2.start();
-        thread3.start();
         thread1.join();
         thread2.join();
-        thread3.join();
-        assertEquals(true,pBook.toString().equals("PhoneBook{users=[User=userName='Nikola', userNumber=[+858522222], " +
-                "User=userName='Blad', userNumber=[+85, +858522], " +
-                "User=userName='Kostia', userNumber=[+858512, +858515424], " +
-                "User=userName='Kolia', userNumber=[], " +
-                "User=userName='Nika', userNumber=[], " +
-                "User=userName='Vlad', userNumber=[], " +
-                "User=userName='Anna', userNumber=[]]}"));
+        assertEquals(1012, pBook.toString()
+                .split("\\[").length - 2);//проверка что добавило 1000 пользователей
+
+    }
+
+    @Test
+    void tread6() throws IllegalAccessException, InterruptedException {//один пишет -- другой читает(одним добавляет номер пользователю, другой читает номера по имени у тех кто уже в книге)
+        ArrayList<User> users = new ArrayList<User>();
+        PhoneBook pBook = new PhoneBook(users);
+        ArrayList<String> num = new ArrayList<>();
+        ArrayList<String> num1 = new ArrayList<>();
+        pBook.addUser(new User("Vlad1", num));
+        pBook.addUser(new User("Vlad2", num));
+        for (int i = 1; i <= 1000; i++) {
+                pBook.addNumber("Vlad1", "" + i);
+                num1.add(""+i);
+        }
+        Thread thread1 = new Thread(() -> {
+            for (int i = 1; i <= 2000; i++) {
+                try {
+                    pBook.addNumber("Vlad2", "" + i);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Thread thread2 = new Thread(() -> {
+            for (int m = 1; m <= 1000; m++) {
+                assertEquals(num1,pBook.foundNumbers("Vlad1"));
+            }
+        });
+        thread1.start();
+        thread2.start();
+        thread1.join();
+        thread2.join();
+        assertEquals(2000, pBook.toString()
+                .split("\\[")[3].split(",").length);//проверка что добавило 1000 пользователей
+
     }
 }

@@ -14,14 +14,15 @@ public class User {// передалать это книга а не юзер у
     /**
      * cпиcок номеров пользователя
      */
-    private List<String> userNumber = new ArrayList<String>();  // бефер номеров пользователей
+    private final List<String> userNumber = new ArrayList<String>();  // бефер номеров пользователей
 
     /**
      * Конcтруктор
      */
     public User(String userName, List<String> userNumber) {
         if (userName != null && userNumber != null) {
-            this.userNumber = (ArrayList<String>) userNumber;
+
+            this.userNumber.addAll(userNumber);
             this.userName = userName;
         }
     }
