@@ -273,11 +273,9 @@ class PhoneBookTest {
         thread4.start();
         thread3.join();
         thread4.join();
-        System.out.println(pBook.toString());
         String[] test = pBook.toString().replaceFirst(".$", "").split("\\[\\]+");
         for (String it : test) {
             if (it.contains("'Vlad1'")) {
-                System.out.println(it.replaceFirst(".$", ""));
                 if (it.contains("PhoneBook")) {
                     assertEquals(1000, it.replaceFirst("PhoneBook\\{users=\\[", "")
                             .replaceFirst(".$", "")
@@ -316,7 +314,6 @@ class PhoneBookTest {
                 }
             }
         });
-
         thread1.start();
         thread2.start();
         thread1.join();

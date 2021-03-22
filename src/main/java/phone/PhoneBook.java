@@ -104,9 +104,9 @@ public class PhoneBook {
         if (checkExNumber(name, number)) {
             Optional<User> user = findUser(name);
             if (user.isPresent()) {
-                synchronized (user.get()) {
-                    if (!user.get().getUserNumber().contains(number)) {
-                        this.users.get(this.users.indexOf(user.get())).getUserNumber().add(number);
+                if (!user.get().getUserNumber().contains(number)) {
+                    synchronized (user.get()) {
+                        user.get().getUserNumber().add(number);
                         return true;
                     }
                 }
@@ -128,9 +128,9 @@ public class PhoneBook {
         if (checkExNumber(name, number)) {
             Optional<User> user = findUser(name);
             if (user.isPresent()) {
-                synchronized (user.get()) {
-                    if (user.get().getUserNumber().contains(number)) {
-                        this.users.get(this.users.indexOf(user.get())).getUserNumber().remove(number);
+                if (user.get().getUserNumber().contains(number)) {
+                    synchronized (user.get()) {
+                        user.get().getUserNumber().remove(number);
                         return true;
                     }
                 }
