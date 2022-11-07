@@ -183,7 +183,7 @@ class PhoneBookTest {
         PhoneBook pBook = new PhoneBook(users);
         assertEquals("Пользователь не может быть Null", pBook.foundNumbers(null).toString().replaceAll("[\\[|\\]]", ""));//null введеный
         assertEquals("+8585858", pBook.foundNumbers("Nikola").toString().replaceAll("[\\[|\\]]", ""));//поиcк когда номеров 1
-        assertEquals("Пользователя нет в cиcтеме", pBook.foundNumbers("Anna").toString().replaceAll("[\\[|\\]]", ""));//нет данного пользователя в cиcтеме
+        assertEquals("Пользователя нет в системе", pBook.foundNumbers("Anna").toString().replaceAll("[\\[|\\]]", ""));//нет данного пользователя в cиcтеме
         assertEquals("+8582222, 8585858555, 8585855", pBook.foundNumbers("Blad").toString().replaceAll("[\\[|\\]]", ""));//поиcк когда номеров больше 1
         assertEquals("", pBook.foundNumbers("Kostia").toString().replaceAll("[\\[|\\]]", ""));//поиcк когда нет номеров
     }
